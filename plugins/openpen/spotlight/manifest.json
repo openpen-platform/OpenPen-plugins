@@ -1,0 +1,16 @@
+{
+  "id": "@openpen/spotlight",
+  "scope": "openpen",
+  "name": "spotlight",
+  "ownerId": 281348594,
+  "ownerLogin": "openpen-platform",
+  "ownerType": "Organization",
+  "description": "Dims the screen and keeps a soft circular spotlight following the cursor to focus the audience's attention.",
+  "minAppVersion": "1.0.0",
+  "repo": "https://github.com/openpen-platform/openpen-spotlight",
+  "latestVersion": "1.0.0",
+  "releaseUrl": "https://github.com/openpen-platform/openpen-spotlight/releases/download/v1.0.0/openpen-spotlight-1.0.0.zip",
+  "sha256": "d7425582eee70b43abccf95c68dcbf58949631138507d7ccb05479f02de3b4eb",
+  "state": "active",
+  "registeredAt": "2026-06-11T14:19:26Z"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "@openpen/step-marker",
+  "scope": "openpen",
+  "name": "step-marker",
+  "ownerId": 281348594,
+  "ownerLogin": "openpen-platform",
+  "ownerType": "Organization",
+  "description": "Click to drop sequentially numbered circular markers for step-by-step annotations.",
+  "minAppVersion": "1.0.0",
+  "repo": "https://github.com/openpen-platform/openpen-step-marker",
+  "latestVersion": "1.0.0",
+  "releaseUrl": "https://github.com/openpen-platform/openpen-step-marker/releases/download/v1.0.0/openpen-step-marker-1.0.0.zip",
+  "sha256": "d8939f98c6261095933ebbb294758d3ef5eaa7902ad7eec67d52547468f89a49",
+  "state": "active",
+  "registeredAt": "2026-06-11T14:19:26Z"
+}

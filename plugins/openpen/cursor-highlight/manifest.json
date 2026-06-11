@@ -1,0 +1,16 @@
+{
+  "id": "@openpen/cursor-highlight",
+  "scope": "openpen",
+  "name": "cursor-highlight",
+  "ownerId": 281348594,
+  "ownerLogin": "openpen-platform",
+  "ownerType": "Organization",
+  "description": "A coloured glow that follows the cursor so viewers can track it during screen sharing. Optional click ripple.",
+  "minAppVersion": "1.0.0",
+  "repo": "https://github.com/openpen-platform/openpen-cursor-highlight",
+  "latestVersion": "1.0.0",
+  "releaseUrl": "https://github.com/openpen-platform/openpen-cursor-highlight/releases/download/v1.0.0/openpen-cursor-highlight-1.0.0.zip",
+  "sha256": "ac6dd318282c00c46bbd0b1810bfe71fe6273c1ea2167c887f4a34396331b7ca",
+  "state": "active",
+  "registeredAt": "2026-06-11T14:19:26Z"
+}

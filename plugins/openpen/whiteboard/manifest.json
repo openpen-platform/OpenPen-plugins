@@ -1,0 +1,16 @@
+{
+  "id": "@openpen/whiteboard",
+  "scope": "openpen",
+  "name": "whiteboard",
+  "ownerId": 281348594,
+  "ownerLogin": "openpen-platform",
+  "ownerType": "Organization",
+  "description": "One-tap opaque whiteboard / blackboard backdrop drawn beneath existing strokes. White, black, or custom colour.",
+  "minAppVersion": "1.0.0",
+  "repo": "https://github.com/openpen-platform/openpen-whiteboard",
+  "latestVersion": "1.0.0",
+  "releaseUrl": "https://github.com/openpen-platform/openpen-whiteboard/releases/download/v1.0.0/openpen-whiteboard-1.0.0.zip",
+  "sha256": "cf4a391e4cbbd1dd3f7698e95c18fb3714a9da6d8fa33908db0acc59d1841029",
+  "state": "active",
+  "registeredAt": "2026-06-11T14:19:26Z"
+}
