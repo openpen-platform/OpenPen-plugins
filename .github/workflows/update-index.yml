@@ -1,0 +1,42 @@
+name: Update plugin index
+
+# Regenerates plugins.json after a manifest change lands on main.
+# The build step fails (and plugins.json is left untouched) if any manifest is invalid.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'plugins/**/manifest.json'
+      - 'scripts/build-index.mjs'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-index
+  cancel-in-progress: false
+
+jobs:
+  update-index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Regenerate plugins.json
+        run: node scripts/build-index.mjs
+      - name: Commit updated index
+        run: |
+          if git diff --quiet -- plugins.json; then
+            echo "plugins.json unchanged"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add plugins.json
+          git commit -m "chore: regenerate plugins.json"
+          git push
