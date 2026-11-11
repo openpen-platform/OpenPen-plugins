@@ -1,0 +1,49 @@
+name: Update community index
+
+# Scans public repositories with the `openpen-plugin` topic and regenerates community/plugins.json.
+# The official plugins.json is read for id collisions and never written by this workflow.
+# If the scan fails as a whole (API error, rate limit, invalid blocklist) the list is left untouched.
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'community/blocklist.json'
+      - 'scripts/build-community-index.mjs'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-community-index
+  cancel-in-progress: false
+
+jobs:
+  update-community-index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Scan and regenerate community/plugins.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/build-community-index.mjs
+      - name: Commit updated list
+        run: |
+          if git diff --quiet -- community/plugins.json && [ -z "$(git ls-files --others --exclude-standard -- community/plugins.json)" ]; then
+            echo "community/plugins.json unchanged"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add community/plugins.json
+          git commit -m "chore: update community index"
+          git pull --rebase origin main
+          git push
