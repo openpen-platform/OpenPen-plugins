@@ -1,26 +1,6 @@
 {
   "schemaVersion": 1,
   "tier": "community",
-  "updatedAt": "2026-11-14T16:12:47Z",
-  "plugins": [
-    {
-      "id": "@openpen-platform/community-dogfood-test",
-      "scope": "openpen-platform",
-      "name": "community-dogfood-test",
-      "ownerId": 281348594,
-      "ownerLogin": "openpen-platform",
-      "ownerType": "Organization",
-      "description": "Test plugin for verifying the community list. Will be deleted.",
-      "minAppVersion": "1.0.0",
-      "repo": "https://github.com/openpen-platform/community-dogfood-test",
-      "latestVersion": "0.0.1",
-      "releaseUrl": "https://github.com/openpen-platform/community-dogfood-test/releases/download/v0.0.1/openpen-platform-community-dogfood-test-0.0.1.zip",
-      "sha256": "538d2b5b1a52684dc558510ed551d607f90c5aef9a7c5aeb9c46ff393a160429",
-      "state": "active",
-      "tier": "community",
-      "reviewed": false,
-      "indexedAt": "2026-11-14T16:12:47Z",
-      "releasedAt": "2026-11-14T16:12:34Z"
-    }
-  ]
+  "updatedAt": "2026-11-14T16:13:47Z",
+  "plugins": []
 }
