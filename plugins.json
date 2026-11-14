@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-06-11T14:19:26Z",
+  "updatedAt": "2026-11-14T20:24:31Z",
   "plugins": [
     {
       "id": "@openpen/arrow",
@@ -10,11 +10,11 @@
       "ownerLogin": "openpen-platform",
       "ownerType": "Organization",
       "description": "Straight-line tool with arrowheads. Solid, open, or hollow heads; optional double-ended. Hold Shift to snap to 45 degrees.",
-      "minAppVersion": "1.0.0",
+      "minAppVersion": "1.6.0",
       "repo": "https://github.com/openpen-platform/openpen-arrow",
-      "latestVersion": "1.0.0",
-      "releaseUrl": "https://github.com/openpen-platform/openpen-arrow/releases/download/v1.0.0/openpen-arrow-1.0.0.zip",
-      "sha256": "140fd4b047853edcd14dfae910b55bc34ad4b02a72b6a75da24d39f628614afd",
+      "latestVersion": "1.1.0",
+      "releaseUrl": "https://github.com/openpen-platform/openpen-arrow/releases/download/v1.1.0/openpen-arrow-1.1.0.zip",
+      "sha256": "25fa31d2aa0ae07a0ee9e2843f3f1cb86cc9b8154f5564027594b5e6fd3f46c9",
       "state": "active",
       "registeredAt": "2026-06-11T14:19:26Z"
     },
