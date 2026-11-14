@@ -1,4 +1,10 @@
 {
   "schemaVersion": 1,
-  "entries": []
+  "entries": [
+    {
+      "match": "repo",
+      "value": "openpen-platform/community-dogfood-test",
+      "reason": "Test plugin used to verify the community list; removed after verification."
+    }
+  ]
 }
