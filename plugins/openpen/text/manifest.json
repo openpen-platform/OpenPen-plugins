@@ -6,11 +6,11 @@
   "ownerLogin": "openpen-platform",
   "ownerType": "Organization",
   "description": "Click-to-type text annotations. IME-safe editing, multi-line, commits into undo/redo history.",
-  "minAppVersion": "1.0.0",
+  "minAppVersion": "1.6.0",
   "repo": "https://github.com/openpen-platform/openpen-text",
-  "latestVersion": "1.0.0",
-  "releaseUrl": "https://github.com/openpen-platform/openpen-text/releases/download/v1.0.0/openpen-text-1.0.0.zip",
-  "sha256": "ab0f6a190dfd856cbc7d9a06bbe044608a159ebc97727ab156eca6c485559d35",
+  "latestVersion": "1.1.0",
+  "releaseUrl": "https://github.com/openpen-platform/openpen-text/releases/download/v1.1.0/openpen-text-1.1.0.zip",
+  "sha256": "776229632d54fe3ad65c808bcf558b7a5774c5b0053c632a0bc931feab50c5b3",
   "state": "active",
   "registeredAt": "2026-06-11T14:19:26Z"
 }
