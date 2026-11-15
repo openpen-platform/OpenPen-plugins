@@ -1,0 +1,15 @@
+{
+  "id": "@navishachiku/walkthrough-test",
+  "scope": "navishachiku",
+  "name": "walkthrough-test",
+  "ownerId": 67287285,
+  "ownerLogin": "navishachiku",
+  "ownerType": "User",
+  "description": "Test plugin used to verify the catalog registration flow. Safe to ignore.",
+  "minAppVersion": "1.0.0",
+  "repo": "https://github.com/openpen-platform/walkthrough-test",
+  "latestVersion": "0.2.0",
+  "releaseUrl": "https://github.com/openpen-platform/walkthrough-test/releases/download/v0.2.0/navishachiku-walkthrough-test-0.2.0.zip",
+  "sha256": "98ec4598ce62b6e0ca6da8e77f9cb6d2c444718bfd45800364c2b5f32387d4cd",
+  "state": "active"
+}
