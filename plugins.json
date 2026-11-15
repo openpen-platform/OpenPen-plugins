@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-11-14T20:25:43Z",
+  "updatedAt": "2026-11-15T04:48:21Z",
   "plugins": [
     {
       "id": "@openpen/arrow",
@@ -97,6 +97,22 @@
       "sha256": "d8939f98c6261095933ebbb294758d3ef5eaa7902ad7eec67d52547468f89a49",
       "state": "active",
       "registeredAt": "2026-06-11T14:19:26Z"
+    },
+    {
+      "id": "@openpen-platform/walkthrough-test",
+      "scope": "openpen-platform",
+      "name": "walkthrough-test",
+      "ownerId": 281348594,
+      "ownerLogin": "openpen-platform",
+      "ownerType": "Organization",
+      "description": "Test plugin used to verify the catalog registration flow. Safe to ignore.",
+      "minAppVersion": "1.0.0",
+      "repo": "https://github.com/openpen-platform/walkthrough-test",
+      "latestVersion": "0.1.1",
+      "releaseUrl": "https://github.com/openpen-platform/walkthrough-test/releases/download/v0.1.1/openpen-platform-walkthrough-test-0.1.1.zip",
+      "sha256": "3cec3d6d8679d647ba061cb33c3d46d2ba2ec4fd7c016b2a180c286b7a6aed05",
+      "state": "active",
+      "registeredAt": "2026-11-15T04:46:21Z"
     }
   ]
 }
