@@ -1,0 +1,15 @@
+{
+  "id": "@navishachiku/hello-test",
+  "scope": "navishachiku",
+  "name": "hello-test",
+  "ownerId": 67287285,
+  "ownerLogin": "navishachiku",
+  "ownerType": "User",
+  "description": "Test plugin used to verify the publishing flow.",
+  "minAppVersion": "1.0.0",
+  "repo": "https://github.com/navishachiku/hello-test",
+  "latestVersion": "0.1.0",
+  "releaseUrl": "https://github.com/navishachiku/hello-test/releases/download/v0.1.0/navishachiku-hello-test-0.1.0.zip",
+  "sha256": "933be3333ba1d5f79c496c3021fda05b13aadd2d6480f3e250d298d9a64d4db0",
+  "state": "active"
+}
