@@ -1,0 +1,15 @@
+{
+  "id": "@navishachiku/second-test",
+  "scope": "navishachiku",
+  "name": "second-test",
+  "ownerId": 67287285,
+  "ownerLogin": "navishachiku",
+  "ownerType": "User",
+  "description": "Second test plugin for the tutorial flow.",
+  "minAppVersion": "1.0.0",
+  "repo": "https://github.com/navishachiku/second-test",
+  "latestVersion": "0.1.0",
+  "releaseUrl": "https://github.com/navishachiku/second-test/releases/download/v0.1.0/navishachiku-second-test-0.1.0.zip",
+  "sha256": "5dbade30dc0abe0a1b29c989dffc45877e3bb2d3bdb149e5fe9923f1367b17af",
+  "state": "active"
+}
