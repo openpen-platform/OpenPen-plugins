@@ -498,7 +498,7 @@ export async function validatePr({ repo, base, head, author, ctx }) {
     if (c.status === 'D') {
       const gone = existing?.state === 'tombstoned'
         ? fail('deleted', 'manifest deleted', 'a tombstoned id must stay in the catalog so it cannot be registered again')
-        : warn('deleted', 'manifest deleted', 'removing an entry is not an update; a maintainer decides (see the yank and tombstone flow)');
+        : warn('deleted', 'manifest deleted', 'removing an entry is not an update; a maintainer decides. To take a plugin down, open an issue in this repository; see "Removing a plugin" at https://openpen.pages.dev/docs/guides/publishing');
       sections.push({ path: c.path, kind: 'deletion', checks: [gone] });
       continue;
     }
