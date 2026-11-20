@@ -14,16 +14,35 @@ import {
   parseSemver, compareSemver, levenshtein, code, makeContext, validatePr, formatComment, postComment,
   MARKER,
 } from '../validate-pr.mjs';
+import { extractListing } from '../lib/listing.mjs';
+import { makeZip, png, jpeg, gif, svg } from '../test-helpers/fixtures.mjs';
 
 const run = promisify(execFile);
 const SCRIPT = join(dirname(fileURLToPath(import.meta.url)), '..', 'validate-pr.mjs');
+const SYNC_SCRIPT = join(dirname(fileURLToPath(import.meta.url)), '..', 'sync-listing.mjs');
 const ORG_ID = 281348594;
 
 // --- fake GitHub ---
 
+const pluginJson = (extra = {}) => JSON.stringify({ id: '@alice/notes', name: 'Notes', version: '1.0.0', description: 'd', minAppVersion: '1.0.0', renderer: 'dist/renderer.js', ...extra });
+// Listing fields as an official plugin writes them in plugin.json, and the image files on its tag.
+const OFFICIAL_LISTING = {
+  descriptionLocalized: { 'zh-Hant': '畫直線箭頭。', 'zh-Hans': '画直线箭头。' },
+  icon: '.github/marketplace/icon.png',
+  screenshots: [
+    { src: '.github/marketplace/cover.png', alt: 'An arrow points at a button.' },
+    { src: '.github/readme-demo.gif', alt: 'Arrows are dragged onto a page.' },
+  ],
+};
+const OFFICIAL_FILES = () => ({
+  '.github/marketplace/icon.png': png(256, 256),
+  '.github/marketplace/cover.png': png(960, 675),
+  '.github/readme-demo.gif': gif(960, 675),
+});
 const zips = {
-  good: Buffer.from('zip-bytes-good'),
-  other: Buffer.from('zip-bytes-other'),
+  good: makeZip({ 'plugin.json': pluginJson(), 'dist/renderer.js': '// good' }),
+  other: makeZip({ 'plugin.json': pluginJson(), 'dist/renderer.js': '// other' }),
+  official: makeZip({ 'plugin.json': pluginJson({ id: '@openpen/arrow', ...OFFICIAL_LISTING }), 'dist/renderer.js': '// arrow' }),
 };
 const sha = (b) => createHash('sha256').update(b).digest('hex');
 
@@ -41,6 +60,10 @@ function resetFake() {
   fake.nextCommentId = 1;
   fake.seenAuth = [];
   fake.downloadAuth = [];
+  fake.zips = {}; // extra packages served at /dl/<name>.zip
+  fake.raw = OFFICIAL_FILES(); // repo files served at /raw/<owner>/<repo>/<tag>/<path>, whatever the tag
+  fake.rawSeen = [];
+  fake.rawStatus = {}; // repo file path -> HTTP status to answer instead of the file
 }
 
 before(async () => {
@@ -55,15 +78,25 @@ before(async () => {
     };
     const readBody = (cb) => { let d = ''; req.on('data', (c) => (d += c)); req.on('end', () => cb(d ? JSON.parse(d) : {})); };
     if ([...fake.fail].some((f) => p.startsWith(f))) return send(500, { message: 'boom' });
+    let m;
+    if ((m = /^\/raw\/[^/]+\/[^/]+\/[^/]+\/(.+)$/.exec(p))) {
+      fake.rawSeen.push(p);
+      if (fake.rawStatus[m[1]]) return send(fake.rawStatus[m[1]]);
+      const f = fake.raw[m[1]];
+      if (!f) return send(404);
+      res.setHeader('content-length', f.length);
+      return res.end(f);
+    }
     if (p.startsWith('/dl/')) {
       fake.downloadAuth.push(req.headers.authorization ?? null);
       if (p === '/dl/good.zip') { res.setHeader('content-length', zips.good.length); return res.end(zips.good); }
       if (p === '/dl/other.zip') return res.end(zips.other);
+      if ((m = /^\/dl\/(.+)\.zip$/.exec(p)) && zips[m[1]]) return res.end(zips[m[1]]);
+      if (m && fake.zips[m[1]]) return res.end(fake.zips[m[1]]);
       if (p === '/dl/redirect.zip') { res.statusCode = 302; res.setHeader('location', 'https://evil.example.com/x.zip'); return res.end(); }
       return send(404, { message: 'nope' });
     }
     fake.seenAuth.push({ path: p, auth: req.headers.authorization ?? null });
-    let m;
     if (p === '/orgs/openpen-platform') return send(200, { id: ORG_ID });
     if ((m = /^\/orgs\/openpen-platform\/members\/(.+)$/.exec(p))) {
       if (req.headers.authorization !== 'Bearer org-secret') return send(302);
@@ -119,7 +152,13 @@ function manifest(over = {}) {
   };
 }
 const mpath = (m) => `plugins/${m.scope}/${m.name}/manifest.json`;
-const OFFICIAL = () => manifest({ scope: 'openpen', name: 'arrow', ownerId: ORG_ID, ownerLogin: 'openpen-platform', ownerType: 'Organization', repo: 'https://github.com/openpen-platform/openpen-arrow', latestVersion: '1.0.0' });
+const officialListing = (v, pj = OFFICIAL_LISTING) => extractListing(pj, { owner: 'openpen-platform', repo: 'openpen-arrow', tag: `v${v}` }).listing;
+const OFFICIAL = (over = {}) => manifest({
+  scope: 'openpen', name: 'arrow', ownerId: ORG_ID, ownerLogin: 'openpen-platform', ownerType: 'Organization',
+  repo: 'https://github.com/openpen-platform/openpen-arrow', latestVersion: '1.0.0',
+  releaseUrl: `${base}/dl/official.zip`, sha256: sha(zips.official),
+  ...officialListing(over.latestVersion ?? '1.0.0'), ...over,
+});
 
 // baseFiles/headFiles: { path: object|string|null(delete) }
 function makeRepo(baseFiles, headFiles) {
@@ -144,7 +183,7 @@ function makeRepo(baseFiles, headFiles) {
 }
 after(() => { for (const d of made) rmSync(d, { recursive: true, force: true }); });
 
-const ctxFor = (extra = {}) => makeContext({ apiBase: base, token: '', orgToken: '', allowLocalDownload: true, ...extra });
+const ctxFor = (extra = {}) => makeContext({ apiBase: base, token: '', orgToken: '', allowLocalDownload: true, rawBase: `${base}/raw`, ...extra });
 const validate = (repo, author, extra) => validatePr({ repo, base: 'main', head: 'pr', author, ctx: ctxFor(extra) });
 const byId = (section, id) => section.checks.filter((c) => c.id === id);
 const statusOf = (section, label) => section.checks.find((c) => c.label.startsWith(label))?.status;
@@ -188,7 +227,7 @@ test('registration: a valid third-party registration passes every condition', as
   assert.equal(r.passed, true, JSON.stringify(r, null, 1));
   const s = r.sections[0];
   assert.equal(s.kind, 'registration');
-  assert.equal(s.checks.filter((c) => c.status === 'pass').length, 8); // schema + 7 spec conditions
+  assert.equal(s.checks.filter((c) => c.status === 'pass').length, 9); // schema + 7 spec conditions + listing match
   assert.equal(s.checks.some((c) => c.status === 'fail'), false);
 });
 
@@ -393,7 +432,7 @@ test('update: minAppVersion above the latest stable fails condition 4', async ()
 test('update: @openpen/* requires a current org member; ownerId equality is not enough', async () => {
   resetFake();
   const oldM = OFFICIAL();
-  const newM = { ...OFFICIAL(), latestVersion: '1.1.0' };
+  const newM = OFFICIAL({ latestVersion: '1.1.0' });
   const outsider = await validate(update(oldM, newM), 'alice');
   assert.equal(statusOf(outsider.sections[0], '6.'), 'fail');
   assert.equal(statusOf(outsider.sections[0], '3.'), 'pass'); // ownerId matches, still not authorised
@@ -648,4 +687,156 @@ test('cli: a tool error overwrites a stale comment so an old pass is not left st
   const r = await run(process.execPath, [SCRIPT, '--repo', repo, '--base', 'nope', '--head', 'pr', '--api-base', base, '--pr-author', 'alice', '--post-comment', '--pr-repo', 'o/r', '--pr-number', '3'], { env: { ...process.env, GITHUB_TOKEN: '', ORG_READ_TOKEN: '' } }).catch((e) => e);
   assert.equal(r.code, 2);
   assert.match(fake.comments.find((c) => c.id === 50).body, /could not run/);
+});
+
+// --- marketplace listing fields (icon, screenshots, descriptionLocalized) ---
+
+// A release package whose plugin.json carries `extra`, served at /dl/<name>.zip.
+function pkg(name, extra) {
+  const z = makeZip({ 'plugin.json': pluginJson(extra), 'dist/renderer.js': `// ${name}` });
+  fake.zips[name] = z;
+  return { releaseUrl: `${base}/dl/${name}.zip`, sha256: sha(z) };
+}
+const NOTES_LISTING = {
+  descriptionLocalized: { 'zh-Hant': '筆記', 'zh-Hans': '笔记' },
+  icon: 'img/icon.png',
+  screenshots: [{ src: 'img/a.png', alt: 'Notes are open on a page.' }],
+};
+const notesListing = (pj) => extractListing(pj, { owner: 'alice', repo: 'notes', tag: 'v1.1.0' }).listing;
+const withoutListing = (m) => { const c = { ...m }; for (const k of ['icon', 'screenshots', 'descriptionLocalized']) delete c[k]; return c; };
+
+test('listing #2: an update whose listing fields equal the release plugin.json, pinned to the tag, passes', async () => {
+  resetFake();
+  const rel = pkg('notes-listed', NOTES_LISTING);
+  const fields = notesListing(NOTES_LISTING);
+  assert.equal(fields.icon, 'https://raw.githubusercontent.com/alice/notes/v1.1.0/img/icon.png');
+  const r = await validate(update(manifest(), manifest({ latestVersion: '1.1.0', ...rel, ...fields })), 'alice');
+  assert.equal(r.passed, true, JSON.stringify(r, null, 1));
+  assert.equal(byId(r.sections[0], 'listing-match')[0].status, 'pass');
+});
+
+test('listing #2: a listing field that differs from the release plugin.json fails and is named', async () => {
+  resetFake();
+  const rel = pkg('notes-listed', NOTES_LISTING);
+  const fields = notesListing(NOTES_LISTING);
+  const otherTag = await validate(update(manifest(), manifest({ latestVersion: '1.1.0', ...rel, ...fields, icon: fields.icon.replace('v1.1.0', 'main') })), 'alice');
+  const c = byId(otherTag.sections[0], 'listing-match')[0];
+  assert.equal(otherTag.passed, false);
+  assert.equal(c.status, 'fail');
+  assert.match(c.message, /^icon differs/);
+  assert.doesNotMatch(c.message, /screenshots|descriptionLocalized/);
+  // An official update that leaves the fields out of the manifest is inconsistent too.
+  const official = await validate(update(OFFICIAL(), withoutListing(OFFICIAL({ latestVersion: '1.1.0' }))), 'maintainer');
+  const o = byId(official.sections[0], 'listing-match')[0];
+  assert.equal(o.status, 'fail');
+  assert.match(o.message, /icon is in plugin\.json but missing from the manifest/);
+});
+
+test('listing #3: an official plugin with a complete listing passes; every image is read from its release tag', async () => {
+  resetFake();
+  const r = await validate(update(OFFICIAL(), OFFICIAL({ latestVersion: '1.1.0' })), 'maintainer');
+  assert.equal(r.passed, true, JSON.stringify(r, null, 1));
+  assert.equal(byId(r.sections[0], 'official-listing')[0].status, 'pass');
+  assert.deepEqual(fake.rawSeen.sort(), [
+    '/raw/openpen-platform/openpen-arrow/v1.1.0/.github/marketplace/cover.png',
+    '/raw/openpen-platform/openpen-arrow/v1.1.0/.github/marketplace/icon.png',
+    '/raw/openpen-platform/openpen-arrow/v1.1.0/.github/readme-demo.gif',
+  ]);
+  // A JPEG cover is accepted as well.
+  resetFake();
+  const pj = { ...OFFICIAL_LISTING, screenshots: [{ src: 'shots/cover.jpg', alt: 'A still frame.' }, OFFICIAL_LISTING.screenshots[1]] };
+  fake.raw['shots/cover.jpg'] = jpeg(1920, 1350);
+  const m = { ...withoutListing(OFFICIAL({ latestVersion: '1.1.0', ...pkg('arrow-jpeg', { id: '@openpen/arrow', ...pj }) })), ...officialListing('1.1.0', pj) };
+  const j = await validate(update(OFFICIAL(), m), 'maintainer');
+  assert.equal(j.passed, true, JSON.stringify(j, null, 1));
+});
+
+test('listing #3: an official plugin missing an item, or with a malformed one, is failed and the item is named', async () => {
+  const L = OFFICIAL_LISTING;
+  const big = (b, n) => Buffer.concat([b, Buffer.alloc(n)]);
+  const cases = [
+    ['no icon', { ...L, icon: undefined }, {}, /^icon is missing$/],
+    ['no screenshots', { ...L, screenshots: undefined }, {}, /^screenshots is missing$/],
+    ['no zh-Hans', { ...L, descriptionLocalized: { 'zh-Hant': '箭頭' } }, {}, /^descriptionLocalized\.zh-Hans is missing$/],
+    ['no zh-Hant', { ...L, descriptionLocalized: { 'zh-Hans': '箭头' } }, {}, /^descriptionLocalized\.zh-Hant is missing$/],
+    ['parent directory', { ...L, icon: '../icon.png' }, {}, /icon must not contain "\.\."/],
+    ['absolute path', { ...L, screenshots: [{ src: '/etc/cover.png', alt: 'x' }] }, {}, /screenshots\[0\]\.src must be a relative path/],
+    ['external URL', { ...L, icon: 'https://evil.example.com/i.png' }, {}, /icon must be a path inside the repository/],
+    ['not on the tag', L, { '.github/marketplace/icon.png': null }, /icon is not on tag `v1\.1\.0` \(HTTP 404\)/],
+    ['icon size', L, { '.github/marketplace/icon.png': png(128, 128) }, /icon must be 256×256 pixels \(found 128×128\)/],
+    ['icon bytes', L, { '.github/marketplace/icon.png': png(256, 256, { pad: 256 * 1024 }) }, /icon is larger than 262144 bytes/],
+    ['SVG named .png', L, { '.github/marketplace/cover.png': svg() }, /screenshots\[0\] is not a PNG file/],
+    ['animated cover', L, { '.github/marketplace/cover.png': png(960, 675, { animated: true }) }, /screenshots\[0\] is animated/],
+    ['narrow', L, { '.github/marketplace/cover.png': png(800, 562) }, /screenshots\[0\] must be at least 960 pixels wide \(found 800\)/],
+    ['aspect ratio', L, { '.github/readme-demo.gif': gif(960, 540) }, /screenshots\[1\] aspect ratio differs from screenshots\[0\] by more than 1%/],
+    ['screenshot bytes', L, { '.github/readme-demo.gif': big(gif(960, 675), 5 * 1024 * 1024) }, /screenshots\[1\] is larger than 5242880 bytes/],
+  ];
+  for (const [name, pj, files, re] of cases) {
+    resetFake();
+    for (const [p, b] of Object.entries(files)) { if (b === null) delete fake.raw[p]; else fake.raw[p] = b; }
+    const rel = pkg('arrow-case', { id: '@openpen/arrow', ...pj });
+    const m = { ...withoutListing(OFFICIAL({ latestVersion: '1.1.0', ...rel })), ...officialListing('1.1.0', pj) };
+    const r = await validate(update(OFFICIAL(), m), 'maintainer');
+    assert.equal(byId(r.sections[0], 'listing-match')[0].status, 'pass', `${name}: ${JSON.stringify(r.sections[0].checks)}`);
+    const c = byId(r.sections[0], 'official-listing')[0];
+    assert.equal(c?.status, 'fail', name);
+    assert.match(c.message, re, name);
+    assert.equal(r.passed, false, name);
+  }
+});
+
+test('listing #4: a third-party PR is not failed for missing or malformed listing fields', async () => {
+  resetFake();
+  // plugin.json has a bad icon and a good description: only the description belongs in the manifest.
+  const pj = { ...NOTES_LISTING, icon: '../x.png', screenshots: [{ src: 'https://evil.example.com/a.png', alt: 'x' }] };
+  const rel = pkg('notes-bad', pj);
+  const fields = notesListing(pj);
+  assert.deepEqual(Object.keys(fields), ['descriptionLocalized']);
+  const dropped = await validate(update(manifest(), manifest({ latestVersion: '1.1.0', ...rel, ...fields })), 'alice');
+  assert.equal(dropped.passed, true, JSON.stringify(dropped, null, 1));
+  assert.equal(byId(dropped.sections[0], 'official-listing').length, 0);
+  // No listing fields anywhere: passes without a note.
+  const none = await validate(update(manifest(), manifest({ latestVersion: '1.1.0' })), 'alice');
+  assert.equal(byId(none.sections[0], 'listing-match')[0].status, 'pass');
+  // plugin.json has valid fields that the manifest leaves out (an older CLI): a note, not a failure.
+  const relOk = pkg('notes-listed', NOTES_LISTING);
+  const missing = await validate(update(manifest(), manifest({ latestVersion: '1.1.0', ...relOk })), 'alice');
+  assert.equal(missing.passed, true);
+  assert.equal(byId(missing.sections[0], 'listing-match')[0].status, 'warn');
+  assert.equal(fake.rawSeen.length, 0); // third-party images are not fetched
+});
+
+test('sync-listing #1: writes the listing fields from the release plugin.json into the manifest', async () => {
+  resetFake();
+  const dir = mkdtempSync(join(tmpdir(), 'catalog-sync-'));
+  made.push(dir);
+  const file = join(dir, 'manifest.json');
+  const stale = { ...withoutListing(OFFICIAL({ latestVersion: '1.1.0' })), icon: 'https://example.com/old.png' };
+  writeFileSync(file, JSON.stringify(stale, null, 2) + '\n');
+  await run(process.execPath, [SYNC_SCRIPT, '--allow-local-download', file]);
+  const after = JSON.parse(readFileSync(file, 'utf8'));
+  assert.deepEqual(after, { ...withoutListing(stale), ...officialListing('1.1.0') });
+  assert.deepEqual(Object.keys(after).slice(0, 10), ['id', 'scope', 'name', 'ownerId', 'ownerLogin', 'ownerType', 'description', 'descriptionLocalized', 'icon', 'screenshots']);
+  // The written manifest passes the consistency check.
+  const r = await validate(update(OFFICIAL(), after), 'maintainer');
+  assert.equal(r.passed, true, JSON.stringify(r, null, 1));
+  // A package that does not match sha256 is refused and the manifest is left alone.
+  const bad = { ...stale, sha256: '0'.repeat(64) };
+  writeFileSync(file, JSON.stringify(bad, null, 2) + '\n');
+  const e = await run(process.execPath, [SYNC_SCRIPT, '--allow-local-download', file]).catch((x) => x);
+  assert.equal(e.code, 1);
+  assert.match(e.stderr, /sha256/);
+  assert.deepEqual(JSON.parse(readFileSync(file, 'utf8')), bad);
+});
+
+test('regression: an official image that cannot be fetched (403, 429, 5xx) fails as a fetch failure, not as missing from the tag', async () => {
+  for (const status of [403, 429, 503]) {
+    resetFake();
+    fake.rawStatus['.github/marketplace/icon.png'] = status;
+    const r = await validate(update(OFFICIAL(), OFFICIAL({ latestVersion: '1.1.0' })), 'maintainer');
+    const c = byId(r.sections[0], 'official-listing')[0];
+    assert.equal(c.status, 'fail', String(status));
+    assert.match(c.message, new RegExp(`^icon could not be fetched from tag \\S+ \\(HTTP ${status}\\); re-run the check later$`), String(status));
+    assert.doesNotMatch(c.message, /is not on tag/, String(status));
+  }
 });

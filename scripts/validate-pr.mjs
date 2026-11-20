@@ -7,23 +7,27 @@
 //   node scripts/validate-pr.mjs --repo <dir> --base <ref> --head <ref> --pr-author <login>
 //     [--api-base <url>] [--comment-file <path>] [--result-file <path>]
 //     [--post-comment --pr-repo <owner/name> --pr-number <n>] [--latest-stable <semver>]
-//     [--forbid-index-edit] [--allow-local-download]
+//     [--forbid-index-edit] [--allow-local-download [--raw-base <url>]]
 //   --repo      checkout holding the base branch history; the PR head only needs to be fetched, not checked out
 //   --forbid-index-edit  fail when the PR touches plugins.json or community/plugins.json
 //               (enable once the index is generated automatically)
 //   --allow-local-download  tests only: allow http://127.0.0.1 release downloads
+//   --raw-base  tests only (needs --allow-local-download): fetch raw.githubusercontent.com files from this base
 // Env: GITHUB_TOKEN     optional, used for GitHub API calls (never sent to release downloads)
 //      ORG_READ_TOKEN   optional, token able to read openpen-platform org members; without it only
 //                       public membership is visible
 // Exit: 0 all conditions pass (warnings allowed) / 1 at least one condition fails / 2 tool error
 //
-// Rule sources: plugin-spec 4.2 manifest fields, 4.4 acceptance conditions, 4.5 official scope.
+// Rule sources: plugin-spec 4.2 manifest fields, 4.4 acceptance conditions, 4.5 official scope, and the
+// marketplace listing fields (icon, screenshots, descriptionLocalized) with the official listing requirements.
 
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { readZipEntry } from './build-community-index.mjs';
+import { LISTING_FIELDS, RAW_HOST, extractListing, missingOfficial, canonical, extFormat, inspectImage } from './lib/listing.mjs';
 
 export const MARKER = '<!-- catalog-pr-validation -->';
 export const OFFICIAL_ORG = 'openpen-platform';
@@ -44,6 +48,13 @@ const MAX_MANIFEST_BYTES = 64 * 1024;
 const DOWNLOAD_HOPS_MAX = 5;
 const DOWNLOAD_HOSTS = ['github.com', 'objects.githubusercontent.com', 'release-assets.githubusercontent.com'];
 const INDEX_FILES = ['plugins.json', 'community/plugins.json'];
+// Official listing images (checked by fetching them from the release tag).
+const MAX_ICON_BYTES = 256 * 1024;
+const ICON_SIZE = 256;
+const MAX_SCREENSHOT_BYTES = 5 * 1024 * 1024;
+const MIN_SCREENSHOT_WIDTH = 960;
+const MAX_RATIO_DIFF = 0.01;
+const FORMAT_NAME = { png: 'PNG', jpeg: 'JPEG', gif: 'GIF' };
 
 // --- small helpers ---
 
@@ -102,6 +113,7 @@ export function makeContext(opts = {}) {
   const token = opts.token ?? process.env.GITHUB_TOKEN ?? '';
   const orgToken = opts.orgToken ?? process.env.ORG_READ_TOKEN ?? '';
   const allowLocal = !!opts.allowLocalDownload;
+  const rawBase = allowLocal && opts.rawBase ? opts.rawBase.replace(/\/+$/, '') : null;
 
   async function api(path, { auth = token, method = 'GET', body } = {}) {
     const headers = { Accept: 'application/vnd.github+json', 'User-Agent': 'openpen-catalog-pr-validation' };
@@ -150,6 +162,42 @@ export function makeContext(opts = {}) {
     throw new Error('too many redirects');
   }
 
+  // A file from a plugin repo at a tag, through raw.githubusercontent.com only. Reads at most maxBytes + 1
+  // bytes, so an oversized file is reported without being downloaded whole. Returns { status, buf, tooBig }.
+  async function fetchRepoFile(url, maxBytes) {
+    const prefix = `https://${RAW_HOST}/`;
+    if (!url.startsWith(prefix)) throw new Error(`not a ${RAW_HOST} URL: ${code(url)}`);
+    let current = rawBase ? `${rawBase}/${url.slice(prefix.length)}` : url;
+    const home = new URL(current).host;
+    const close = async (res) => { try { await res.body?.cancel(); } catch { /* already closed */ } };
+    for (let hop = 0; hop <= DOWNLOAD_HOPS_MAX; hop++) {
+      const res = await fetch(current, {
+        redirect: 'manual',
+        headers: { 'User-Agent': 'openpen-catalog-pr-validation' },
+        signal: AbortSignal.timeout(60000),
+      });
+      if ([301, 302, 303, 307, 308].includes(res.status)) {
+        await close(res);
+        const loc = res.headers.get('location');
+        const next = loc ? new URL(loc, current) : null;
+        if (!next || next.host !== home || (!rawBase && next.protocol !== 'https:')) throw new Error(`redirect to a host that is not allowed (HTTP ${res.status})`);
+        current = next.toString();
+        continue;
+      }
+      if (res.status !== 200) { await close(res); return { status: res.status, buf: null, tooBig: false }; }
+      if (Number(res.headers.get('content-length') ?? 0) > maxBytes) { await close(res); return { status: 200, buf: null, tooBig: true }; }
+      const chunks = [];
+      let total = 0;
+      for await (const c of res.body) {
+        total += c.length;
+        if (total > maxBytes) { await close(res); return { status: 200, buf: null, tooBig: true }; }
+        chunks.push(c);
+      }
+      return { status: 200, buf: Buffer.concat(chunks), tooBig: false };
+    }
+    throw new Error('too many redirects');
+  }
+
   const cache = new Map();
   const once = (key, fn) => {
     if (!cache.has(key)) cache.set(key, fn());
@@ -159,6 +207,7 @@ export function makeContext(opts = {}) {
   return {
     api,
     download,
+    fetchRepoFile,
     orgToken,
     latestStable: opts.latestStable ?? null,
     forbidIndexEdit: !!opts.forbidIndexEdit,
@@ -233,7 +282,13 @@ export function checkSchema(manifest, dirScope, dirName, existing) {
   return problems.length ? fail('schema', label, problems.join('; ')) : pass('schema', label);
 }
 
+// Returns { check, buf }: buf is the downloaded package, null when it could not be downloaded.
 async function checkRelease(manifest, ctx, label, requireTag) {
+  const r = await releaseCheck(manifest, ctx, label, requireTag);
+  return r.check ? r : { check: r, buf: null };
+}
+
+async function releaseCheck(manifest, ctx, label, requireTag) {
   const id = 'release';
   const problems = [];
   const repo = parseRepoUrl(manifest.repo);
@@ -271,7 +326,95 @@ async function checkRelease(manifest, ctx, label, requireTag) {
       }
     }
   }
-  return problems.length ? fail(id, label, problems.join('; ')) : pass(id, label);
+  const check = problems.length ? fail(id, label, problems.join('; ')) : pass(id, label);
+  return { check, buf };
+}
+
+// Listing fields: the manifest must carry what the release plugin.json says (after dropping fields that break
+// the rules), pinned to tag v<latestVersion>. Official plugins must also carry every field, valid, and the image
+// files on that tag must meet the official listing requirements.
+async function checkListing(manifest, buf, dirScope, ctx) {
+  const L1 = 'listing fields equal the release plugin.json (icon, screenshots, descriptionLocalized)';
+  const L2 = 'official plugins carry an icon, screenshots and zh-Hant/zh-Hans descriptions that meet the listing rules';
+  const official = dirScope === OFFICIAL_SCOPE;
+  const out = [];
+  const unverifiable = (why) => {
+    out.push(fail('listing-match', L1, `could not verify: ${why}`));
+    if (official) out.push(fail('official-listing', L2, `could not verify: ${why}`));
+    return out;
+  };
+  if (!buf) return unverifiable('the release package could not be downloaded');
+  const repo = parseRepoUrl(manifest.repo);
+  if (!repo) return unverifiable('repo is not a github.com repository URL');
+  let pj;
+  try {
+    const raw = readZipEntry(buf, 'plugin.json');
+    if (!raw) throw new Error('the release package has no plugin.json at the zip root');
+    pj = JSON.parse(raw.toString('utf8'));
+  } catch (e) {
+    return unverifiable(e.message);
+  }
+  const tag = `v${manifest.latestVersion}`;
+  const { listing, problems } = extractListing(pj, { owner: repo.owner, repo: repo.name, tag });
+
+  const differs = [];
+  const notes = [];
+  for (const f of LISTING_FIELDS) {
+    const have = manifest[f];
+    const want = listing[f];
+    if (have === undefined && want === undefined) continue;
+    if (have === undefined && !official) notes.push(f);
+    else if (have === undefined) differs.push(`${f} is in plugin.json but missing from the manifest`);
+    else if (canonical(have) !== canonical(want)) {
+      differs.push(`${f} differs from plugin.json in the release (expected ${want === undefined ? 'no such field' : code(JSON.stringify(want))})`);
+    }
+  }
+  if (differs.length) out.push(fail('listing-match', L1, `${differs.join('; ')}; run scripts/sync-listing.mjs to rewrite them`));
+  else if (notes.length) out.push(warn('listing-match', L1, `plugin.json has ${notes.join(', ')} that the manifest leaves out; run scripts/sync-listing.mjs to add them`));
+  else out.push(pass('listing-match', L1));
+
+  if (official) {
+    const bad = [...problems, ...missingOfficial(listing)];
+    bad.push(...await officialImageProblems(listing, tag, ctx));
+    out.push(bad.length ? fail('official-listing', L2, bad.join('; ')) : pass('official-listing', L2));
+  }
+  return out;
+}
+
+// Fetches each listed image from the release tag and checks it against the official listing requirements.
+async function officialImageProblems(listing, tag, ctx) {
+  const bad = [];
+  const load = async (field, url, maxBytes) => {
+    let r;
+    try { r = await ctx.fetchRepoFile(url, maxBytes); } catch (e) { bad.push(`${field} could not be fetched: ${e.message}`); return null; }
+    if (r.status === 404) { bad.push(`${field} is not on tag ${code(tag)} (HTTP 404)`); return null; }
+    // Anything else (403, 429, 5xx) says nothing about the file: still fail, but name it a fetch failure.
+    if (r.status !== 200) { bad.push(`${field} could not be fetched from tag ${code(tag)} (HTTP ${r.status}); re-run the check later`); return null; }
+    if (r.tooBig) { bad.push(`${field} is larger than ${maxBytes} bytes`); return null; }
+    const img = inspectImage(r.buf);
+    const want = extFormat(url);
+    if (img.format !== want) { bad.push(`${field} is not a ${FORMAT_NAME[want]} file, although its name says so`); return null; }
+    return img;
+  };
+  if (listing.icon) {
+    const img = await load('icon', listing.icon, MAX_ICON_BYTES);
+    if (img && (img.width !== ICON_SIZE || img.height !== ICON_SIZE)) bad.push(`icon must be ${ICON_SIZE}×${ICON_SIZE} pixels (found ${img.width}×${img.height})`);
+  }
+  let first = null;
+  for (const [i, s] of (listing.screenshots ?? []).entries()) {
+    const field = `screenshots[${i}]`;
+    const img = await load(field, s.src, MAX_SCREENSHOT_BYTES);
+    if (!img) continue;
+    if (i === 0 && img.animated) bad.push(`${field} is animated; the cover must be a still image`);
+    if (img.width < MIN_SCREENSHOT_WIDTH) bad.push(`${field} must be at least ${MIN_SCREENSHOT_WIDTH} pixels wide (found ${img.width})`);
+    if (!img.height) { bad.push(`${field} has no height`); continue; }
+    const ratio = img.width / img.height;
+    if (first === null) first = { i, ratio };
+    else if (Math.abs(ratio - first.ratio) / first.ratio > MAX_RATIO_DIFF) {
+      bad.push(`${field} aspect ratio differs from screenshots[${first.i}] by more than ${MAX_RATIO_DIFF * 100}%`);
+    }
+  }
+  return bad;
 }
 
 async function checkMinApp(manifest, ctx, label) {
@@ -355,13 +498,15 @@ export async function checkRegistration({ manifest, dirScope, dirName, author, b
     : fail('id-pattern', L4, `id ${code(manifest.id)}, scope ${code(dirScope)}, name ${code(dirName)} do not match ${PLUGIN_ID_RE}`));
 
   out.push(await checkMinApp(manifest, ctx, '5. minAppVersion is valid semver and not above the latest stable OpenPen'));
-  out.push(await checkRelease(manifest, ctx, '6. releaseUrl is reachable, sha256 matches, release tag v<latestVersion> exists', true));
+  const rel = await checkRelease(manifest, ctx, '6. releaseUrl is reachable, sha256 matches, release tag v<latestVersion> exists', true);
+  out.push(rel.check);
 
   const L7 = '7. id is not a built-in module id';
   out.push(await guarded('built-in', L7, async () => {
     const ids = await ctx.builtInIds();
     return ids.has(manifest.id) ? fail('built-in', L7, `${code(manifest.id)} is a built-in module id`) : pass('built-in', L7);
   }));
+  out.push(...await checkListing(manifest, rel.buf, dirScope, ctx));
 
   // Advisory (not a plugin-spec acceptance condition): never fails the PR.
   if (manifest.registeredAt !== undefined) {
@@ -383,7 +528,8 @@ export async function checkRegistration({ manifest, dirScope, dirName, author, b
 export async function checkUpdate({ manifest, dirScope, dirName, author, existing, ctx }) {
   const out = [];
   out.push(checkSchema(manifest, dirScope, dirName, existing));
-  out.push(await checkRelease(manifest, ctx, '2. releaseUrl download matches sha256', false));
+  const rel = await checkRelease(manifest, ctx, '2. releaseUrl download matches sha256', false);
+  out.push(rel.check);
 
   const L3 = '3. repo owner id equals the registered ownerId';
   const repo = parseRepoUrl(manifest.repo);
@@ -420,6 +566,7 @@ export async function checkUpdate({ manifest, dirScope, dirName, author, existin
   } else {
     out.push(pass('org-member', L6, 'not applicable: scope is not openpen'));
   }
+  out.push(...await checkListing(manifest, rel.buf, dirScope, ctx));
 
   if (existing.state === 'tombstoned') {
     out.push(fail('state', 'note: tombstoned entries accept no update', 'this id is tombstoned'));
@@ -587,6 +734,7 @@ async function main() {
     latestStable: get('--latest-stable'),
     forbidIndexEdit: has('--forbid-index-edit'),
     allowLocalDownload: has('--allow-local-download'),
+    rawBase: get('--raw-base'),
   });
   let result;
   try {
