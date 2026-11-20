@@ -12,8 +12,8 @@ import { tmpdir } from 'node:os';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
-import { deflateRawSync } from 'node:zlib';
 
+import { makeZip } from '../test-helpers/fixtures.mjs';
 import { checkEntry, isAllowedAssetUrl, isAllowedRedirectUrl, assertApiBase, parseSemver, compareSemver, readZipEntry } from '../build-community-index.mjs';
 
 const run = promisify(execFile);
@@ -21,33 +21,6 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const SCRIPT = process.env.COMMUNITY_INDEX_SCRIPT ?? resolve(HERE, '..', 'build-community-index.mjs');
 const REPO_ROOT = resolve(HERE, '..', '..');
 const sha = (b) => createHash('sha256').update(b).digest('hex');
-
-// ---- minimal zip writer (test helper) ----
-const CRC_TABLE = Array.from({ length: 256 }, (_, n) => { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; return c >>> 0; });
-const crc32 = (buf) => { let c = 0xffffffff; for (const b of buf) c = CRC_TABLE[(c ^ b) & 0xff] ^ (c >>> 8); return (c ^ 0xffffffff) >>> 0; };
-function makeZip(files, { deflate = false } = {}) {
-  const locals = [], centrals = [];
-  let offset = 0;
-  const list = Array.isArray(files) ? files : Object.entries(files);
-  for (const [name, content] of list) {
-    const data = Buffer.from(content);
-    const comp = deflate ? deflateRawSync(data) : data;
-    const nameBuf = Buffer.from(name);
-    const lh = Buffer.alloc(30);
-    lh.writeUInt32LE(0x04034b50, 0); lh.writeUInt16LE(20, 4); lh.writeUInt16LE(deflate ? 8 : 0, 8);
-    lh.writeUInt32LE(crc32(data), 14); lh.writeUInt32LE(comp.length, 18); lh.writeUInt32LE(data.length, 22); lh.writeUInt16LE(nameBuf.length, 26);
-    const ch = Buffer.alloc(46);
-    ch.writeUInt32LE(0x02014b50, 0); ch.writeUInt16LE(20, 4); ch.writeUInt16LE(20, 6); ch.writeUInt16LE(deflate ? 8 : 0, 10);
-    ch.writeUInt32LE(crc32(data), 16); ch.writeUInt32LE(comp.length, 20); ch.writeUInt32LE(data.length, 24); ch.writeUInt16LE(nameBuf.length, 28); ch.writeUInt32LE(offset, 42);
-    locals.push(lh, nameBuf, comp); centrals.push(ch, nameBuf);
-    offset += 30 + nameBuf.length + comp.length;
-  }
-  const cd = Buffer.concat(centrals);
-  const end = Buffer.alloc(22);
-  end.writeUInt32LE(0x06054b50, 0); end.writeUInt16LE(list.length, 8); end.writeUInt16LE(list.length, 10);
-  end.writeUInt32LE(cd.length, 12); end.writeUInt32LE(offset, 16);
-  return Buffer.concat([...locals, cd, end]);
-}
 
 // ---- mock GitHub ----
 let server, base;
@@ -910,4 +883,50 @@ test('checkEntry refuses an entry whose owner id changed', () => {
   const ctx = { officialIds: new Set(), blocklist: [] };
   assert.equal(checkEntry(entry, { ...ctx, ownerId: 1 }), null);
   assert.match(checkEntry(entry, { ...ctx, ownerId: 2 }), /owner id changed/);
+});
+
+// ---- marketplace listing fields (icon, screenshots, descriptionLocalized) ----
+const LISTING = {
+  descriptionLocalized: { 'zh-Hant': '量尺工具', 'zh-Hans': '量尺工具', fr: 'règle' },
+  icon: '.github/marketplace/icon.png',
+  screenshots: [
+    { src: '.github/marketplace/cover.png', alt: 'A ruler measures a button.' },
+    { src: '.github/readme-demo.gif', alt: 'The ruler is dragged across the page.' },
+  ],
+};
+
+test('listing: icon, screenshots and Chinese descriptions are carried into the entry, images pinned to the release tag', async () => {
+  reset();
+  addRepo('alice', 'ruler', '1.2.0', { pj: LISTING, release: { tag_name: 'release-1.2.0' } });
+  const root = newRoot();
+  assert.equal((await scanOnce(root)).code, 0);
+  const e = readIndex(root).plugins[0];
+  const raw = 'https://raw.githubusercontent.com/alice/ruler/release-1.2.0';
+  assert.deepEqual(e.descriptionLocalized, { 'zh-Hant': '量尺工具', 'zh-Hans': '量尺工具' }); // other locales dropped
+  assert.equal(e.icon, `${raw}/.github/marketplace/icon.png`);
+  assert.deepEqual(e.screenshots, [
+    { src: `${raw}/.github/marketplace/cover.png`, alt: 'A ruler measures a button.' },
+    { src: `${raw}/.github/readme-demo.gif`, alt: 'The ruler is dragged across the page.' },
+  ]);
+});
+
+test('listing: a third-party plugin with missing or malformed fields is still listed, only the bad fields are dropped', async () => {
+  reset();
+  addRepo('alice', 'none', '1.0.0'); // no listing fields at all
+  addRepo('bob', 'parent', '1.0.0', { pj: { ...LISTING, icon: '../secret.png' } });
+  addRepo('carol', 'absolute', '1.0.0', { pj: { ...LISTING, screenshots: [{ src: '/etc/cover.png', alt: 'x' }] } });
+  addRepo('dave', 'external', '1.0.0', { pj: { ...LISTING, icon: 'https://evil.example.com/i.png', descriptionLocalized: { 'zh-Hant': 'x'.repeat(81), 'zh-Hans': '\u202Eevil' } } });
+  const root = newRoot();
+  const r = await scanOnce(root);
+  assert.equal(r.code, 0, r.stderr);
+  const byId = Object.fromEntries(readIndex(root).plugins.map((p) => [p.id, p]));
+  assert.deepEqual(Object.keys(byId).sort(), ['@alice/none', '@bob/parent', '@carol/absolute', '@dave/external']);
+  for (const k of ['icon', 'screenshots', 'descriptionLocalized']) assert.equal(k in byId['@alice/none'], false, k);
+  assert.equal('icon' in byId['@bob/parent'], false);
+  assert.equal(byId['@bob/parent'].screenshots.length, 2);
+  assert.equal('screenshots' in byId['@carol/absolute'], false);
+  assert.ok(byId['@carol/absolute'].icon);
+  assert.equal('icon' in byId['@dave/external'], false);
+  assert.equal('descriptionLocalized' in byId['@dave/external'], false);
+  assert.match(r.stdout, /bob\/parent.*icon must not contain "\.\."/);
 });

@@ -20,6 +20,7 @@ import { readFileSync, writeFileSync, existsSync, renameSync, mkdirSync } from '
 import { join, resolve, dirname, posix } from 'node:path';
 import { createHash } from 'node:crypto';
 import { inflateRawSync } from 'node:zlib';
+import { extractListing } from './lib/listing.mjs';
 
 export const TOPIC = 'openpen-plugin';
 const MAX_ZIP_BYTES = 10 * 1024 * 1024; // official packages are around 12 KB
@@ -342,6 +343,17 @@ async function evaluateRepo({ apiBase, token, repo, previous: previousByUrl, pre
     }
   }
 
+  // Listing fields are optional here: a field that breaks the rules is left out, the plugin is still listed.
+  // Image paths are pinned to the tag of the release the package came from.
+  const [repoOwner, repoName] = full.split('/');
+  const { listing, problems } = extractListing(manifest, { owner: repoOwner, repo: repoName, tag: String(rel.tag_name ?? '') });
+  for (const p of problems) log(`drop listing field of ${full}: ${p}`);
+  if (!rel.tag_name && (listing.icon || listing.screenshots)) {
+    log(`drop listing field of ${full}: icon and screenshots, the release has no tag name to pin them to`);
+    delete listing.icon;
+    delete listing.screenshots;
+  }
+
   return {
     kind: 'entry',
     entry: {
@@ -352,6 +364,7 @@ async function evaluateRepo({ apiBase, token, repo, previous: previousByUrl, pre
       ownerLogin,
       ownerType: repo.owner.type,
       description: manifest.description,
+      ...listing,
       minAppVersion: manifest.minAppVersion,
       repo: repo.html_url,
       latestVersion: manifest.version,
