@@ -10,22 +10,22 @@
     "zh-Hant": "點一下放下依序編號的圓形標記，適合逐步說明操作步驟。",
     "zh-Hans": "点一下放下依序编号的圆形标记，适合逐步说明操作步骤。"
   },
-  "icon": "https://raw.githubusercontent.com/openpen-platform/openpen-step-marker/v1.0.1/.github/marketplace/icon.png",
+  "icon": "https://raw.githubusercontent.com/openpen-platform/openpen-step-marker/v1.1.0/.github/marketplace/icon.png",
   "screenshots": [
     {
-      "src": "https://raw.githubusercontent.com/openpen-platform/openpen-step-marker/v1.0.1/.github/marketplace/cover.png",
+      "src": "https://raw.githubusercontent.com/openpen-platform/openpen-step-marker/v1.1.0/.github/marketplace/cover.png",
       "alt": "Markers numbered 1, 2 and 3 sit on a settings page."
     },
     {
-      "src": "https://raw.githubusercontent.com/openpen-platform/openpen-step-marker/v1.0.1/.github/readme-demo.gif",
+      "src": "https://raw.githubusercontent.com/openpen-platform/openpen-step-marker/v1.1.0/.github/readme-demo.gif",
       "alt": "Numbered markers are dropped one by one; undo rolls the next number back."
     }
   ],
-  "minAppVersion": "1.0.0",
+  "minAppVersion": "1.7.0",
   "repo": "https://github.com/openpen-platform/openpen-step-marker",
-  "latestVersion": "1.0.1",
-  "releaseUrl": "https://github.com/openpen-platform/openpen-step-marker/releases/download/v1.0.1/openpen-step-marker-1.0.1.zip",
-  "sha256": "8784f58d5a3e0317f5302f8053021964c5bc3a0dcba1dcb596fc6f97bdc9abf2",
+  "latestVersion": "1.1.0",
+  "releaseUrl": "https://github.com/openpen-platform/openpen-step-marker/releases/download/v1.1.0/openpen-step-marker-1.1.0.zip",
+  "sha256": "6705b5af4cb728f11d447ea3f41e3b2b9deae44e5d629caac28fed025b3336a0",
   "state": "active",
   "registeredAt": "2026-06-11T14:19:26Z"
 }

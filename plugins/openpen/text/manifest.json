@@ -10,22 +10,22 @@
     "zh-Hant": "點一下就能在畫面上打字標註，支援輸入法與多行，完成後可復原或重做。",
     "zh-Hans": "点一下就能在画面上打字标注，支持输入法与多行，完成后可撤销或重做。"
   },
-  "icon": "https://raw.githubusercontent.com/openpen-platform/openpen-text/v1.1.1/.github/marketplace/icon.png",
+  "icon": "https://raw.githubusercontent.com/openpen-platform/openpen-text/v1.2.0/.github/marketplace/icon.png",
   "screenshots": [
     {
-      "src": "https://raw.githubusercontent.com/openpen-platform/openpen-text/v1.1.1/.github/marketplace/cover.png",
+      "src": "https://raw.githubusercontent.com/openpen-platform/openpen-text/v1.2.0/.github/marketplace/cover.png",
       "alt": "Red text notes sit beside a blog post."
     },
     {
-      "src": "https://raw.githubusercontent.com/openpen-platform/openpen-text/v1.1.1/.github/readme-demo.gif",
+      "src": "https://raw.githubusercontent.com/openpen-platform/openpen-text/v1.2.0/.github/readme-demo.gif",
       "alt": "A click places a caret, a note is typed, and the font size is changed before it is committed."
     }
   ],
-  "minAppVersion": "1.6.0",
+  "minAppVersion": "1.7.0",
   "repo": "https://github.com/openpen-platform/openpen-text",
-  "latestVersion": "1.1.1",
-  "releaseUrl": "https://github.com/openpen-platform/openpen-text/releases/download/v1.1.1/openpen-text-1.1.1.zip",
-  "sha256": "74f3556ece02775723a521dfbbb136ad6ea6a1ce1a1096ab333162954bcf950b",
+  "latestVersion": "1.2.0",
+  "releaseUrl": "https://github.com/openpen-platform/openpen-text/releases/download/v1.2.0/openpen-text-1.2.0.zip",
+  "sha256": "b10b215d7f44cb04accb212b4e64222c0b595f5f1fd852e85a53edc2b98f4550",
   "state": "active",
   "registeredAt": "2026-06-11T14:19:26Z"
 }
