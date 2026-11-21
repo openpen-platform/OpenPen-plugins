@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-11-21T09:33:09Z",
+  "updatedAt": "2026-11-21T11:09:26Z",
   "plugins": [
     {
       "id": "@openpen/arrow",
@@ -14,22 +14,22 @@
         "zh-Hant": "畫直線箭頭，箭頭可選實心、開口或空心；按住 Shift 以 45° 對齊。",
         "zh-Hans": "画直线箭头，箭头可选实心、开口或空心；按住 Shift 以 45° 对齐。"
       },
-      "icon": "https://raw.githubusercontent.com/openpen-platform/openpen-arrow/v1.1.1/.github/marketplace/icon.png",
+      "icon": "https://raw.githubusercontent.com/openpen-platform/openpen-arrow/v1.2.0/.github/marketplace/icon.png",
       "screenshots": [
         {
-          "src": "https://raw.githubusercontent.com/openpen-platform/openpen-arrow/v1.1.1/.github/marketplace/cover.png",
+          "src": "https://raw.githubusercontent.com/openpen-platform/openpen-arrow/v1.2.0/.github/marketplace/cover.png",
           "alt": "An arrow points at the Publish button on a documentation page."
         },
         {
-          "src": "https://raw.githubusercontent.com/openpen-platform/openpen-arrow/v1.1.1/.github/readme-demo.gif",
+          "src": "https://raw.githubusercontent.com/openpen-platform/openpen-arrow/v1.2.0/.github/readme-demo.gif",
           "alt": "Arrows are dragged onto a page, one snaps to 45° with Shift, and the panel switches to a hollow, dashed, double-headed style."
         }
       ],
-      "minAppVersion": "1.6.0",
+      "minAppVersion": "1.7.0",
       "repo": "https://github.com/openpen-platform/openpen-arrow",
-      "latestVersion": "1.1.1",
-      "releaseUrl": "https://github.com/openpen-platform/openpen-arrow/releases/download/v1.1.1/openpen-arrow-1.1.1.zip",
-      "sha256": "275d5bc38a84031a1139f038dc2745202e74307229962db5008e1a390cd31385",
+      "latestVersion": "1.2.0",
+      "releaseUrl": "https://github.com/openpen-platform/openpen-arrow/releases/download/v1.2.0/openpen-arrow-1.2.0.zip",
+      "sha256": "501807189e91bdea72c315dfe41d92613e4a4173549fa26c0061c296f31f9b6f",
       "state": "active",
       "registeredAt": "2026-06-11T14:19:26Z"
     },
@@ -45,22 +45,22 @@
         "zh-Hant": "點一下就能在畫面上打字標註，支援輸入法與多行，完成後可復原或重做。",
         "zh-Hans": "点一下就能在画面上打字标注，支持输入法与多行，完成后可撤销或重做。"
       },
-      "icon": "https://raw.githubusercontent.com/openpen-platform/openpen-text/v1.1.1/.github/marketplace/icon.png",
+      "icon": "https://raw.githubusercontent.com/openpen-platform/openpen-text/v1.2.0/.github/marketplace/icon.png",
       "screenshots": [
         {
-          "src": "https://raw.githubusercontent.com/openpen-platform/openpen-text/v1.1.1/.github/marketplace/cover.png",
+          "src": "https://raw.githubusercontent.com/openpen-platform/openpen-text/v1.2.0/.github/marketplace/cover.png",
           "alt": "Red text notes sit beside a blog post."
         },
         {
-          "src": "https://raw.githubusercontent.com/openpen-platform/openpen-text/v1.1.1/.github/readme-demo.gif",
+          "src": "https://raw.githubusercontent.com/openpen-platform/openpen-text/v1.2.0/.github/readme-demo.gif",
           "alt": "A click places a caret, a note is typed, and the font size is changed before it is committed."
         }
       ],
-      "minAppVersion": "1.6.0",
+      "minAppVersion": "1.7.0",
       "repo": "https://github.com/openpen-platform/openpen-text",
-      "latestVersion": "1.1.1",
-      "releaseUrl": "https://github.com/openpen-platform/openpen-text/releases/download/v1.1.1/openpen-text-1.1.1.zip",
-      "sha256": "74f3556ece02775723a521dfbbb136ad6ea6a1ce1a1096ab333162954bcf950b",
+      "latestVersion": "1.2.0",
+      "releaseUrl": "https://github.com/openpen-platform/openpen-text/releases/download/v1.2.0/openpen-text-1.2.0.zip",
+      "sha256": "b10b215d7f44cb04accb212b4e64222c0b595f5f1fd852e85a53edc2b98f4550",
       "state": "active",
       "registeredAt": "2026-06-11T14:19:26Z"
     },
@@ -169,22 +169,22 @@
         "zh-Hant": "點一下放下依序編號的圓形標記，適合逐步說明操作步驟。",
         "zh-Hans": "点一下放下依序编号的圆形标记，适合逐步说明操作步骤。"
       },
-      "icon": "https://raw.githubusercontent.com/openpen-platform/openpen-step-marker/v1.0.1/.github/marketplace/icon.png",
+      "icon": "https://raw.githubusercontent.com/openpen-platform/openpen-step-marker/v1.1.0/.github/marketplace/icon.png",
       "screenshots": [
         {
-          "src": "https://raw.githubusercontent.com/openpen-platform/openpen-step-marker/v1.0.1/.github/marketplace/cover.png",
+          "src": "https://raw.githubusercontent.com/openpen-platform/openpen-step-marker/v1.1.0/.github/marketplace/cover.png",
           "alt": "Markers numbered 1, 2 and 3 sit on a settings page."
         },
         {
-          "src": "https://raw.githubusercontent.com/openpen-platform/openpen-step-marker/v1.0.1/.github/readme-demo.gif",
+          "src": "https://raw.githubusercontent.com/openpen-platform/openpen-step-marker/v1.1.0/.github/readme-demo.gif",
           "alt": "Numbered markers are dropped one by one; undo rolls the next number back."
         }
       ],
-      "minAppVersion": "1.0.0",
+      "minAppVersion": "1.7.0",
       "repo": "https://github.com/openpen-platform/openpen-step-marker",
-      "latestVersion": "1.0.1",
-      "releaseUrl": "https://github.com/openpen-platform/openpen-step-marker/releases/download/v1.0.1/openpen-step-marker-1.0.1.zip",
-      "sha256": "8784f58d5a3e0317f5302f8053021964c5bc3a0dcba1dcb596fc6f97bdc9abf2",
+      "latestVersion": "1.1.0",
+      "releaseUrl": "https://github.com/openpen-platform/openpen-step-marker/releases/download/v1.1.0/openpen-step-marker-1.1.0.zip",
+      "sha256": "6705b5af4cb728f11d447ea3f41e3b2b9deae44e5d629caac28fed025b3336a0",
       "state": "active",
       "registeredAt": "2026-06-11T14:19:26Z"
     }
