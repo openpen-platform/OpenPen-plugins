@@ -5,12 +5,27 @@
   "ownerId": 281348594,
   "ownerLogin": "openpen-platform",
   "ownerType": "Organization",
-  "description": "Straight-line tool with arrowheads. Solid, open, or hollow heads; optional double-ended. Hold Shift to snap to 45 degrees.",
+  "description": "Draws straight arrows with solid, open or hollow heads, single or double-ended; hold Shift to snap to 45 degrees.",
+  "descriptionLocalized": {
+    "zh-Hant": "畫直線箭頭，箭頭可選實心、開口或空心；按住 Shift 以 45° 對齊。",
+    "zh-Hans": "画直线箭头，箭头可选实心、开口或空心；按住 Shift 以 45° 对齐。"
+  },
+  "icon": "https://raw.githubusercontent.com/openpen-platform/openpen-arrow/v1.1.1/.github/marketplace/icon.png",
+  "screenshots": [
+    {
+      "src": "https://raw.githubusercontent.com/openpen-platform/openpen-arrow/v1.1.1/.github/marketplace/cover.png",
+      "alt": "An arrow points at the Publish button on a documentation page."
+    },
+    {
+      "src": "https://raw.githubusercontent.com/openpen-platform/openpen-arrow/v1.1.1/.github/readme-demo.gif",
+      "alt": "Arrows are dragged onto a page, one snaps to 45° with Shift, and the panel switches to a hollow, dashed, double-headed style."
+    }
+  ],
   "minAppVersion": "1.6.0",
   "repo": "https://github.com/openpen-platform/openpen-arrow",
-  "latestVersion": "1.1.0",
-  "releaseUrl": "https://github.com/openpen-platform/openpen-arrow/releases/download/v1.1.0/openpen-arrow-1.1.0.zip",
-  "sha256": "25fa31d2aa0ae07a0ee9e2843f3f1cb86cc9b8154f5564027594b5e6fd3f46c9",
+  "latestVersion": "1.1.1",
+  "releaseUrl": "https://github.com/openpen-platform/openpen-arrow/releases/download/v1.1.1/openpen-arrow-1.1.1.zip",
+  "sha256": "275d5bc38a84031a1139f038dc2745202e74307229962db5008e1a390cd31385",
   "state": "active",
   "registeredAt": "2026-06-11T14:19:26Z"
 }
