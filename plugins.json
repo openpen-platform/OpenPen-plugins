@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-11-15T04:57:52Z",
+  "updatedAt": "2026-11-21T09:33:09Z",
   "plugins": [
     {
       "id": "@openpen/arrow",
@@ -9,12 +9,27 @@
       "ownerId": 281348594,
       "ownerLogin": "openpen-platform",
       "ownerType": "Organization",
-      "description": "Straight-line tool with arrowheads. Solid, open, or hollow heads; optional double-ended. Hold Shift to snap to 45 degrees.",
+      "description": "Draws straight arrows with solid, open or hollow heads, single or double-ended; hold Shift to snap to 45 degrees.",
+      "descriptionLocalized": {
+        "zh-Hant": "畫直線箭頭，箭頭可選實心、開口或空心；按住 Shift 以 45° 對齊。",
+        "zh-Hans": "画直线箭头，箭头可选实心、开口或空心；按住 Shift 以 45° 对齐。"
+      },
+      "icon": "https://raw.githubusercontent.com/openpen-platform/openpen-arrow/v1.1.1/.github/marketplace/icon.png",
+      "screenshots": [
+        {
+          "src": "https://raw.githubusercontent.com/openpen-platform/openpen-arrow/v1.1.1/.github/marketplace/cover.png",
+          "alt": "An arrow points at the Publish button on a documentation page."
+        },
+        {
+          "src": "https://raw.githubusercontent.com/openpen-platform/openpen-arrow/v1.1.1/.github/readme-demo.gif",
+          "alt": "Arrows are dragged onto a page, one snaps to 45° with Shift, and the panel switches to a hollow, dashed, double-headed style."
+        }
+      ],
       "minAppVersion": "1.6.0",
       "repo": "https://github.com/openpen-platform/openpen-arrow",
-      "latestVersion": "1.1.0",
-      "releaseUrl": "https://github.com/openpen-platform/openpen-arrow/releases/download/v1.1.0/openpen-arrow-1.1.0.zip",
-      "sha256": "25fa31d2aa0ae07a0ee9e2843f3f1cb86cc9b8154f5564027594b5e6fd3f46c9",
+      "latestVersion": "1.1.1",
+      "releaseUrl": "https://github.com/openpen-platform/openpen-arrow/releases/download/v1.1.1/openpen-arrow-1.1.1.zip",
+      "sha256": "275d5bc38a84031a1139f038dc2745202e74307229962db5008e1a390cd31385",
       "state": "active",
       "registeredAt": "2026-06-11T14:19:26Z"
     },
@@ -25,12 +40,27 @@
       "ownerId": 281348594,
       "ownerLogin": "openpen-platform",
       "ownerType": "Organization",
-      "description": "Click-to-type text annotations. IME-safe editing, multi-line, commits into undo/redo history.",
+      "description": "Places text anywhere on screen: click to type; Enter or click away commits as-is, Esc cancels, Shift+Enter adds a line; commits cannot be re-edited.",
+      "descriptionLocalized": {
+        "zh-Hant": "點一下就能在畫面上打字標註，支援輸入法與多行，完成後可復原或重做。",
+        "zh-Hans": "点一下就能在画面上打字标注，支持输入法与多行，完成后可撤销或重做。"
+      },
+      "icon": "https://raw.githubusercontent.com/openpen-platform/openpen-text/v1.1.1/.github/marketplace/icon.png",
+      "screenshots": [
+        {
+          "src": "https://raw.githubusercontent.com/openpen-platform/openpen-text/v1.1.1/.github/marketplace/cover.png",
+          "alt": "Red text notes sit beside a blog post."
+        },
+        {
+          "src": "https://raw.githubusercontent.com/openpen-platform/openpen-text/v1.1.1/.github/readme-demo.gif",
+          "alt": "A click places a caret, a note is typed, and the font size is changed before it is committed."
+        }
+      ],
       "minAppVersion": "1.6.0",
       "repo": "https://github.com/openpen-platform/openpen-text",
-      "latestVersion": "1.1.0",
-      "releaseUrl": "https://github.com/openpen-platform/openpen-text/releases/download/v1.1.0/openpen-text-1.1.0.zip",
-      "sha256": "776229632d54fe3ad65c808bcf558b7a5774c5b0053c632a0bc931feab50c5b3",
+      "latestVersion": "1.1.1",
+      "releaseUrl": "https://github.com/openpen-platform/openpen-text/releases/download/v1.1.1/openpen-text-1.1.1.zip",
+      "sha256": "74f3556ece02775723a521dfbbb136ad6ea6a1ce1a1096ab333162954bcf950b",
       "state": "active",
       "registeredAt": "2026-06-11T14:19:26Z"
     },
@@ -41,12 +71,27 @@
       "ownerId": 281348594,
       "ownerLogin": "openpen-platform",
       "ownerType": "Organization",
-      "description": "Dims the screen and keeps a soft circular spotlight following the cursor to focus the audience's attention.",
-      "minAppVersion": "1.0.0",
+      "description": "Dims the screen and follows the cursor with a soft circular spotlight to focus attention; radius, dim level and soft edge are adjustable.",
+      "descriptionLocalized": {
+        "zh-Hant": "畫面變暗，只留一圈跟著游標移動的柔和聚光，把觀眾的視線帶到重點。",
+        "zh-Hans": "画面变暗，只留一圈跟着光标移动的柔和聚光，把观众的视线带到重点。"
+      },
+      "icon": "https://raw.githubusercontent.com/openpen-platform/openpen-spotlight/v1.1.0/.github/marketplace/icon.png",
+      "screenshots": [
+        {
+          "src": "https://raw.githubusercontent.com/openpen-platform/openpen-spotlight/v1.1.0/.github/marketplace/cover.png",
+          "alt": "A calendar is dimmed except for a spotlight on the Design review event."
+        },
+        {
+          "src": "https://raw.githubusercontent.com/openpen-platform/openpen-spotlight/v1.1.0/.github/readme-demo.gif",
+          "alt": "The spotlight follows the cursor, then the panel changes its radius and dim level."
+        }
+      ],
+      "minAppVersion": "1.6.0",
       "repo": "https://github.com/openpen-platform/openpen-spotlight",
-      "latestVersion": "1.0.0",
-      "releaseUrl": "https://github.com/openpen-platform/openpen-spotlight/releases/download/v1.0.0/openpen-spotlight-1.0.0.zip",
-      "sha256": "d7425582eee70b43abccf95c68dcbf58949631138507d7ccb05479f02de3b4eb",
+      "latestVersion": "1.1.0",
+      "releaseUrl": "https://github.com/openpen-platform/openpen-spotlight/releases/download/v1.1.0/openpen-spotlight-1.1.0.zip",
+      "sha256": "b60a572e4ba54642acba4a1affa18a7a32547312999e01a3ff1833312baa65cd",
       "state": "active",
       "registeredAt": "2026-06-11T14:19:26Z"
     },
@@ -57,12 +102,27 @@
       "ownerId": 281348594,
       "ownerLogin": "openpen-platform",
       "ownerType": "Organization",
-      "description": "A coloured glow that follows the cursor so viewers can track it during screen sharing. Optional click ripple.",
-      "minAppVersion": "1.0.0",
+      "description": "Adds a coloured glow that follows the cursor in screen shares and recordings, toggled from the control bar, plus an optional click ripple in drawing mode.",
+      "descriptionLocalized": {
+        "zh-Hant": "游標周圍加上彩色光暈，分享螢幕時觀眾能一路跟上；可選點擊漣漪。",
+        "zh-Hans": "游标周围加上彩色光晕，分享屏幕时观众能一路跟上；可选点击涟漪。"
+      },
+      "icon": "https://raw.githubusercontent.com/openpen-platform/openpen-cursor-highlight/v1.0.1/.github/marketplace/icon.png",
+      "screenshots": [
+        {
+          "src": "https://raw.githubusercontent.com/openpen-platform/openpen-cursor-highlight/v1.0.1/.github/marketplace/cover.png",
+          "alt": "A yellow glow surrounds the cursor in a mail inbox."
+        },
+        {
+          "src": "https://raw.githubusercontent.com/openpen-platform/openpen-cursor-highlight/v1.0.1/.github/readme-demo.gif",
+          "alt": "The glow follows the cursor, then the panel changes its colour and size."
+        }
+      ],
+      "minAppVersion": "1.6.0",
       "repo": "https://github.com/openpen-platform/openpen-cursor-highlight",
-      "latestVersion": "1.0.0",
-      "releaseUrl": "https://github.com/openpen-platform/openpen-cursor-highlight/releases/download/v1.0.0/openpen-cursor-highlight-1.0.0.zip",
-      "sha256": "ac6dd318282c00c46bbd0b1810bfe71fe6273c1ea2167c887f4a34396331b7ca",
+      "latestVersion": "1.0.1",
+      "releaseUrl": "https://github.com/openpen-platform/openpen-cursor-highlight/releases/download/v1.0.1/openpen-cursor-highlight-1.0.1.zip",
+      "sha256": "56f3a051db14a930d241b66805c75c39e3d2e9397200c11989ba193a299cb7d7",
       "state": "active",
       "registeredAt": "2026-06-11T14:19:26Z"
     },
@@ -73,12 +133,27 @@
       "ownerId": 281348594,
       "ownerLogin": "openpen-platform",
       "ownerType": "Organization",
-      "description": "One-tap opaque whiteboard / blackboard backdrop drawn beneath existing strokes. White, black, or custom colour.",
+      "description": "Fills the screen in one tap with an opaque whiteboard or blackboard backdrop beneath existing strokes, in white, black or a custom colour.",
+      "descriptionLocalized": {
+        "zh-Hant": "一鍵鋪上不透明的白板或黑板底色，墊在既有筆跡下方；可選白、黑或自訂顏色。",
+        "zh-Hans": "一键铺上不透明的白板或黑板底色，垫在既有笔迹下方；可选白、黑或自定义颜色。"
+      },
+      "icon": "https://raw.githubusercontent.com/openpen-platform/openpen-whiteboard/v1.0.1/.github/marketplace/icon.png",
+      "screenshots": [
+        {
+          "src": "https://raw.githubusercontent.com/openpen-platform/openpen-whiteboard/v1.0.1/.github/marketplace/cover.png",
+          "alt": "Three boxes on a white board, the first two joined by a line."
+        },
+        {
+          "src": "https://raw.githubusercontent.com/openpen-platform/openpen-whiteboard/v1.0.1/.github/readme-demo.gif",
+          "alt": "One tap covers a code editor with a whiteboard, then boxes and lines are drawn on it."
+        }
+      ],
       "minAppVersion": "1.0.0",
       "repo": "https://github.com/openpen-platform/openpen-whiteboard",
-      "latestVersion": "1.0.0",
-      "releaseUrl": "https://github.com/openpen-platform/openpen-whiteboard/releases/download/v1.0.0/openpen-whiteboard-1.0.0.zip",
-      "sha256": "cf4a391e4cbbd1dd3f7698e95c18fb3714a9da6d8fa33908db0acc59d1841029",
+      "latestVersion": "1.0.1",
+      "releaseUrl": "https://github.com/openpen-platform/openpen-whiteboard/releases/download/v1.0.1/openpen-whiteboard-1.0.1.zip",
+      "sha256": "23ae64c1b44dad99445a84bdf069a9e1d88cdc3e944de3e85613cb22bf772935",
       "state": "active",
       "registeredAt": "2026-06-11T14:19:26Z"
     },
@@ -89,12 +164,27 @@
       "ownerId": 281348594,
       "ownerLogin": "openpen-platform",
       "ownerType": "Organization",
-      "description": "Click to drop sequentially numbered circular markers for step-by-step annotations.",
+      "description": "Drops sequentially numbered circular markers on click for step-by-step annotations, numbering by canvas marker count so undo rolls the next number back.",
+      "descriptionLocalized": {
+        "zh-Hant": "點一下放下依序編號的圓形標記，適合逐步說明操作步驟。",
+        "zh-Hans": "点一下放下依序编号的圆形标记，适合逐步说明操作步骤。"
+      },
+      "icon": "https://raw.githubusercontent.com/openpen-platform/openpen-step-marker/v1.0.1/.github/marketplace/icon.png",
+      "screenshots": [
+        {
+          "src": "https://raw.githubusercontent.com/openpen-platform/openpen-step-marker/v1.0.1/.github/marketplace/cover.png",
+          "alt": "Markers numbered 1, 2 and 3 sit on a settings page."
+        },
+        {
+          "src": "https://raw.githubusercontent.com/openpen-platform/openpen-step-marker/v1.0.1/.github/readme-demo.gif",
+          "alt": "Numbered markers are dropped one by one; undo rolls the next number back."
+        }
+      ],
       "minAppVersion": "1.0.0",
       "repo": "https://github.com/openpen-platform/openpen-step-marker",
-      "latestVersion": "1.0.0",
-      "releaseUrl": "https://github.com/openpen-platform/openpen-step-marker/releases/download/v1.0.0/openpen-step-marker-1.0.0.zip",
-      "sha256": "d8939f98c6261095933ebbb294758d3ef5eaa7902ad7eec67d52547468f89a49",
+      "latestVersion": "1.0.1",
+      "releaseUrl": "https://github.com/openpen-platform/openpen-step-marker/releases/download/v1.0.1/openpen-step-marker-1.0.1.zip",
+      "sha256": "8784f58d5a3e0317f5302f8053021964c5bc3a0dcba1dcb596fc6f97bdc9abf2",
       "state": "active",
       "registeredAt": "2026-06-11T14:19:26Z"
     }
