@@ -5,12 +5,27 @@
   "ownerId": 281348594,
   "ownerLogin": "openpen-platform",
   "ownerType": "Organization",
-  "description": "One-tap opaque whiteboard / blackboard backdrop drawn beneath existing strokes. White, black, or custom colour.",
+  "description": "Fills the screen in one tap with an opaque whiteboard or blackboard backdrop beneath existing strokes, in white, black or a custom colour.",
+  "descriptionLocalized": {
+    "zh-Hant": "一鍵鋪上不透明的白板或黑板底色，墊在既有筆跡下方；可選白、黑或自訂顏色。",
+    "zh-Hans": "一键铺上不透明的白板或黑板底色，垫在既有笔迹下方；可选白、黑或自定义颜色。"
+  },
+  "icon": "https://raw.githubusercontent.com/openpen-platform/openpen-whiteboard/v1.0.1/.github/marketplace/icon.png",
+  "screenshots": [
+    {
+      "src": "https://raw.githubusercontent.com/openpen-platform/openpen-whiteboard/v1.0.1/.github/marketplace/cover.png",
+      "alt": "Three boxes on a white board, the first two joined by a line."
+    },
+    {
+      "src": "https://raw.githubusercontent.com/openpen-platform/openpen-whiteboard/v1.0.1/.github/readme-demo.gif",
+      "alt": "One tap covers a code editor with a whiteboard, then boxes and lines are drawn on it."
+    }
+  ],
   "minAppVersion": "1.0.0",
   "repo": "https://github.com/openpen-platform/openpen-whiteboard",
-  "latestVersion": "1.0.0",
-  "releaseUrl": "https://github.com/openpen-platform/openpen-whiteboard/releases/download/v1.0.0/openpen-whiteboard-1.0.0.zip",
-  "sha256": "cf4a391e4cbbd1dd3f7698e95c18fb3714a9da6d8fa33908db0acc59d1841029",
+  "latestVersion": "1.0.1",
+  "releaseUrl": "https://github.com/openpen-platform/openpen-whiteboard/releases/download/v1.0.1/openpen-whiteboard-1.0.1.zip",
+  "sha256": "23ae64c1b44dad99445a84bdf069a9e1d88cdc3e944de3e85613cb22bf772935",
   "state": "active",
   "registeredAt": "2026-06-11T14:19:26Z"
 }

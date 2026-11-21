@@ -5,12 +5,27 @@
   "ownerId": 281348594,
   "ownerLogin": "openpen-platform",
   "ownerType": "Organization",
-  "description": "Dims the screen and keeps a soft circular spotlight following the cursor to focus the audience's attention.",
-  "minAppVersion": "1.0.0",
+  "description": "Dims the screen and follows the cursor with a soft circular spotlight to focus attention; radius, dim level and soft edge are adjustable.",
+  "descriptionLocalized": {
+    "zh-Hant": "畫面變暗，只留一圈跟著游標移動的柔和聚光，把觀眾的視線帶到重點。",
+    "zh-Hans": "画面变暗，只留一圈跟着光标移动的柔和聚光，把观众的视线带到重点。"
+  },
+  "icon": "https://raw.githubusercontent.com/openpen-platform/openpen-spotlight/v1.1.0/.github/marketplace/icon.png",
+  "screenshots": [
+    {
+      "src": "https://raw.githubusercontent.com/openpen-platform/openpen-spotlight/v1.1.0/.github/marketplace/cover.png",
+      "alt": "A calendar is dimmed except for a spotlight on the Design review event."
+    },
+    {
+      "src": "https://raw.githubusercontent.com/openpen-platform/openpen-spotlight/v1.1.0/.github/readme-demo.gif",
+      "alt": "The spotlight follows the cursor, then the panel changes its radius and dim level."
+    }
+  ],
+  "minAppVersion": "1.6.0",
   "repo": "https://github.com/openpen-platform/openpen-spotlight",
-  "latestVersion": "1.0.0",
-  "releaseUrl": "https://github.com/openpen-platform/openpen-spotlight/releases/download/v1.0.0/openpen-spotlight-1.0.0.zip",
-  "sha256": "d7425582eee70b43abccf95c68dcbf58949631138507d7ccb05479f02de3b4eb",
+  "latestVersion": "1.1.0",
+  "releaseUrl": "https://github.com/openpen-platform/openpen-spotlight/releases/download/v1.1.0/openpen-spotlight-1.1.0.zip",
+  "sha256": "b60a572e4ba54642acba4a1affa18a7a32547312999e01a3ff1833312baa65cd",
   "state": "active",
   "registeredAt": "2026-06-11T14:19:26Z"
 }

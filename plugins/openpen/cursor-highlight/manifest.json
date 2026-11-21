@@ -5,12 +5,27 @@
   "ownerId": 281348594,
   "ownerLogin": "openpen-platform",
   "ownerType": "Organization",
-  "description": "A coloured glow that follows the cursor so viewers can track it during screen sharing. Optional click ripple.",
-  "minAppVersion": "1.0.0",
+  "description": "Adds a coloured glow that follows the cursor in screen shares and recordings, toggled from the control bar, plus an optional click ripple in drawing mode.",
+  "descriptionLocalized": {
+    "zh-Hant": "游標周圍加上彩色光暈，分享螢幕時觀眾能一路跟上；可選點擊漣漪。",
+    "zh-Hans": "游标周围加上彩色光晕，分享屏幕时观众能一路跟上；可选点击涟漪。"
+  },
+  "icon": "https://raw.githubusercontent.com/openpen-platform/openpen-cursor-highlight/v1.0.1/.github/marketplace/icon.png",
+  "screenshots": [
+    {
+      "src": "https://raw.githubusercontent.com/openpen-platform/openpen-cursor-highlight/v1.0.1/.github/marketplace/cover.png",
+      "alt": "A yellow glow surrounds the cursor in a mail inbox."
+    },
+    {
+      "src": "https://raw.githubusercontent.com/openpen-platform/openpen-cursor-highlight/v1.0.1/.github/readme-demo.gif",
+      "alt": "The glow follows the cursor, then the panel changes its colour and size."
+    }
+  ],
+  "minAppVersion": "1.6.0",
   "repo": "https://github.com/openpen-platform/openpen-cursor-highlight",
-  "latestVersion": "1.0.0",
-  "releaseUrl": "https://github.com/openpen-platform/openpen-cursor-highlight/releases/download/v1.0.0/openpen-cursor-highlight-1.0.0.zip",
-  "sha256": "ac6dd318282c00c46bbd0b1810bfe71fe6273c1ea2167c887f4a34396331b7ca",
+  "latestVersion": "1.0.1",
+  "releaseUrl": "https://github.com/openpen-platform/openpen-cursor-highlight/releases/download/v1.0.1/openpen-cursor-highlight-1.0.1.zip",
+  "sha256": "56f3a051db14a930d241b66805c75c39e3d2e9397200c11989ba193a299cb7d7",
   "state": "active",
   "registeredAt": "2026-06-11T14:19:26Z"
 }
