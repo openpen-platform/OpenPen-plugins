@@ -10,18 +10,22 @@
     "zh-Hant": "拖出彩色外框把觀眾視線帶到畫面某一塊，停兩秒後自動淡出，不用手動清除。",
     "zh-Hans": "拖出彩色外框把观众视线带到画面某一块，停两秒后自动淡出，不用手动清除。"
   },
-  "icon": "https://raw.githubusercontent.com/openpen-platform/openpen-attention-box/v1.0.0/.github/marketplace/icon.png",
+  "icon": "https://raw.githubusercontent.com/openpen-platform/openpen-attention-box/v1.0.2/.github/marketplace/icon.png",
   "screenshots": [
     {
-      "src": "https://raw.githubusercontent.com/openpen-platform/openpen-attention-box/v1.0.0/.github/marketplace/cover.png",
+      "src": "https://raw.githubusercontent.com/openpen-platform/openpen-attention-box/v1.0.2/.github/marketplace/cover.png",
       "alt": "An amber attention box frames the Jun row of a sign-up table while a blue one fades, with the options panel open."
+    },
+    {
+      "src": "https://raw.githubusercontent.com/openpen-platform/openpen-attention-box/v1.0.2/.github/readme-demo.gif",
+      "alt": "An attention box frames the W6 dip in a weekly sign-ups chart, then a box in another colour frames the tops of the W7 and W8 bars. Both boxes fade on their own."
     }
   ],
   "minAppVersion": "1.7.0",
   "repo": "https://github.com/openpen-platform/openpen-attention-box",
-  "latestVersion": "1.0.0",
-  "releaseUrl": "https://github.com/openpen-platform/openpen-attention-box/releases/download/v1.0.0/openpen-attention-box-1.0.0.zip",
-  "sha256": "906f685c6a5f53f5789383adafcf3126df70250ea19eaf64435d9e0d01496498",
+  "latestVersion": "1.0.2",
+  "releaseUrl": "https://github.com/openpen-platform/openpen-attention-box/releases/download/v1.0.2/openpen-attention-box-1.0.2.zip",
+  "sha256": "8c7062445bec80a46f05cc67b08f5b2c68be943e2bc0612feefc767e6c25fed3",
   "state": "active",
   "registeredAt": "2026-11-22T10:45:00Z"
 }
